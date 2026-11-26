@@ -6,7 +6,7 @@ description: Install, enroll, run and upgrade a CasePack self-hosted deployment 
 This runbook takes a CasePack self-hosted deployment from a fresh server to signed-in users, and covers renewal and upgrades. It is for the design-partner preview; read [Self-Hosting](/self-hosting/) first for what the preview supports.
 
 :::note[What this runbook covers]
-Every step here runs in our self-host QA against the published bundle: install, enrollment, first sign-in, inviting users, credential renewal, upgrading between releases, and replacing the shared secrets of older installs. [Not yet validated](#not-yet-validated) lists what isn't covered yet. For those, contact us and we'll do it with you.
+Every step here runs in our self-host QA against the published bundle: install, enrollment, first sign-in, inviting users, credential renewal, and upgrading between releases. [Not yet validated](#not-yet-validated) lists what isn't covered yet. For those, contact us and we'll do it with you.
 :::
 
 ## Before You Start
@@ -65,7 +65,7 @@ Leave these as shipped:
 - `CASEPACK_API_VERSION` and `CASEPACK_SPA_VERSION`: the versions this bundle was tested with.
 
 :::caution
-Keycloak reads the SMTP settings and the service-account secret only on its **first** start. To change them later, see [Sign In and Invite Users](#6-sign-in-and-invite-users) and [Installs Created Before 2026-11-26](#installs-created-before-2026-11-26).
+Keycloak reads the SMTP settings and the service-account secret only on its **first** start. To change SMTP later, see [Sign In and Invite Users](#6-sign-in-and-invite-users). To rotate the service-account secret, open the Keycloak admin console (`http://localhost:8081/admin`, realm **casepack**) at **Clients** → **casepack-user-manager** → **Credentials** and click **Regenerate**. Copy the new secret into `CASEPACK_KEYCLOAK_SA_CLIENT_SECRET` in `.env`, then run `docker compose up -d`.
 :::
 
 ## 3. Start CasePack
@@ -198,18 +198,6 @@ Your `.env` pins the versions you installed, so `git pull` alone doesn't upgrade
    ```
 
 An upgrade keeps the installation, its credential and your data: CasePack doesn't enroll again. Afterwards, `licensectl status` shows the same installation ID.
-
-## Installs Created Before 2026-11-26
-
-Bundles before 2026-11-26 shipped the same S3 keys (`admin` / `admin123456`) and the same Keycloak service-account secret to every install. Anyone who can reach your evidence storage or Keycloak and knows them could read evidence or manage users. `git pull` doesn't change them, because your `.env` already holds them. Replace them:
-
-1. In the Keycloak admin console (`http://localhost:8081/admin`, realm **casepack**), open **Clients** → **casepack-user-manager** → **Credentials**. Click **Regenerate** and copy the new client secret.
-2. In `.env`, set `CASEPACK_KEYCLOAK_SA_CLIENT_SECRET` to that secret. Set `S3_ACCESS_KEY` and `S3_SECRET_KEY` to newly generated values, as in [Configure](#2-configure).
-3. Run `docker compose up -d`.
-
-Until step 3, CasePack can't create users. Do the three steps together.
-
-Your stored evidence and exports stay readable with the new keys.
 
 ## Not Yet Validated
 

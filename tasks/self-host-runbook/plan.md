@@ -12,7 +12,8 @@ The owner decided on 2026-11-26 to publish the runbook here instead. Source: `ca
   - clone, configure `.env` (including the per-install secrets from casepack#29), start;
   - create an enrollment code in the portal, `./activate.sh --code-file`;
   - sign in; SMTP and invitations; status and renewal;
-  - upgrading by version pin; replacing the old shared defaults on an existing install.
+  - upgrading by version pin.
+  - No migration steps for installs made before casepack#29: there are no customers or design partners yet, so the owner treats the bundle as greenfield (2026-11-26).
 - Everything not yet validated is listed as such, with "contact us": your own domain with TLS, restore, rollback, identity replacement, a licensing outage beyond the 30-day credential.
 - `self-hosting.md`: the "Enrollment Publication Gate" section becomes a pointer to the runbook. The prerequisites are corrected: the issuer key ships in `.env.example`, and SMTP is required to invite users.
 - The bundle README's matching "withheld" wording changes in a separate casepack PR.

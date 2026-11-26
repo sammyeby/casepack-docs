@@ -40,20 +40,24 @@ from an environment name, hostname, database, or workload.
 
 - Docker Engine 24+ with Docker Compose v2, or a compatible Podman Compose setup
 - A private CasePack design-partner entitlement
-- A short-lived enrollment code for one available deployment slot
-- The pinned CasePack issuer public key supplied during onboarding
+- A short-lived enrollment code for one available deployment slot, created in
+  the licensing portal
+- An SMTP server: CasePack invites users by email and refuses invitations
+  without it
 - Outbound HTTPS access from the API container to the single configured
   CasePack licensing origin
+
+The bundle's `.env.example` already contains the pinned CasePack issuer public
+key; leave it as shipped.
 - Durable, encrypted backups for PostgreSQL, object storage, and the
   `licensing-state` volume
 
-## Enrollment Publication Gate
+## Installation and Enrollment
 
-The Compose/Podman wrapper and enrollment flow are implemented for engineering
-verification, but public operator commands are intentionally withheld until
-the clean-install, upgrade, rollback, restore, and licensing-outage canary
-passes against a signed compatibility set. Design partners receive the pinned,
-reviewed runbook during onboarding.
+The [Self-Host Runbook](/self-host-runbook/) has the step-by-step commands:
+configuration, start-up, enrollment, first sign-in, renewal, and upgrades. It
+also lists what isn't validated yet, such as your own domain with TLS, restore
+and rollback; contact us for those.
 
 Enrollment uses a short-lived code supplied through a protected prompt or
 owner-readable file. The code must never be passed as a command-line value,
@@ -70,7 +74,7 @@ The CasePack API image is the sole owner of the durable state stored in the
   state.lock
 ```
 
-The private wrapper invokes the API image's licensing command mode; it does not
+`activate.sh` invokes the API image's licensing command mode; it does not
 parse or write these files. The first customer, workspace, and CasePack
 administrator are created only after the API has verified the key-bound
 Connected credential.
@@ -78,8 +82,8 @@ Connected credential.
 ## Credential Refresh
 
 The API attempts a credential refresh approximately every 24 hours with
-per-deployment jitter. The private operator runbook also provides an explicit
-refresh procedure.
+per-deployment jitter. To renew immediately, see
+[Check Status and Renewal](/self-host-runbook/#7-check-status-and-renewal).
 
 Refresh proves possession of the deployment's non-exported Ed25519 private key,
 strictly verifies the returned credential against the pinned offline issuer
@@ -135,8 +139,9 @@ and internal reset actions. This prevents background or externally initiated
 traffic from changing a restored database while its licensing head is being
 reconciled.
 
-The private operator runbook provides status, diagnostics, and recovery
-procedures using the API image's licensing command mode. Recovery codes are
+The [runbook](/self-host-runbook/#7-check-status-and-renewal) shows how to
+check the licensing status. Recovery procedures aren't validated for the
+preview yet: contact us and we'll take you through them. Recovery codes are
 read from protected files, never command-line values.
 
 Recovery does not silently enroll a new identity. Ordinary API startup never
@@ -179,7 +184,7 @@ version must not create another installation or visible license.
 
 Treat any restore as a reconciliation event. Restore all related data from a
 consistent recovery point, start CasePack in recovery mode, complete the
-private diagnostic check, and refresh successfully before resuming ordinary
+diagnostic check with us, and refresh successfully before resuming ordinary
 writes.
 
 ## Object Storage

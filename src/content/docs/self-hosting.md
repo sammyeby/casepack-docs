@@ -178,6 +178,21 @@ Back up these as one recovery set:
 - the `licensing-state` named volume
 - the Keycloak database and required configuration
 
+PostgreSQL isn't published on the server, so dump it from inside its
+container. One dump holds both the CasePack and the Keycloak databases, and
+their roles. It reads the password from the container's own settings, and
+`umask 077` keeps the file readable only by you:
+
+```bash
+umask 077
+docker compose exec -T postgres sh -c 'PGPASSWORD="$POSTGRES_PASSWORD" pg_dumpall -U "$POSTGRES_USER"' > casepack-postgres-$(date +%F).sql
+```
+
+With Podman, use `podman compose -f docker-compose.yml -f docker-compose.podman.yml exec`
+instead of `docker compose exec`. Store the dump encrypted, with the rest of
+the recovery set. Restoring from backup isn't validated yet; see the runbook's
+[Not Yet Validated](/self-host-runbook/#not-yet-validated).
+
 Preserving the licensing volume across image upgrades and ordinary stack
 restarts keeps the deployment identity stable. Redeploying a new CasePack
 version must not create another installation or visible license.

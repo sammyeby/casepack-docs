@@ -19,7 +19,8 @@ CasePack helps MSPs run consistent incident reporting across tenant workspaces, 
 
 > **Self-hosted instances** use the private Connected design-partner flow.
 > Enrollment is completed by an operator before customer data is created. See
-> [Self-Hosting](/self-hosting/) for the current support boundary.
+> [Self-Hosting](/self-hosting/) for the current support boundary and the
+> [Self-Host Runbook](/self-host-runbook/) for installation.
 
 ## Step 2: Explore the Dashboard
 

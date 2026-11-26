@@ -27,7 +27,7 @@ Connected local-state recovery are intentionally different:
 
 | State | Description | UI Behavior |
 |-------|-------------|-------------|
-| **Setup** | A fresh deployment is proven empty and has no verified credential | Customer-data operations are blocked; the operator follows the private enrollment runbook |
+| **Setup** | A fresh deployment is proven empty and has no verified credential | Customer-data operations are blocked; the operator enrolls the deployment (see the [Self-Host Runbook](/self-host-runbook/)) |
 | **Active** | Valid subscription | Full access, no restrictions |
 | **Grace** | Subscription expired, within grace period | Full access with warning banner |
 | **Read-Only Expired** | Grace period ended | Read pages remain visible; create, update, delete, upload, and generation actions are blocked |

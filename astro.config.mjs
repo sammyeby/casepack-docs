@@ -85,6 +85,7 @@ export default defineConfig({
           items: [
             { label: 'Keyboard Shortcuts', slug: 'keyboard-shortcuts' },
             { label: 'Self-Hosting', slug: 'self-hosting' },
+            { label: 'Self-Host Runbook', slug: 'self-host-runbook' },
             { label: 'Licensing & Access', slug: 'licensing-access' },
             { label: 'Pricing Plans', slug: 'pricing-plans' },
           ],

@@ -20,15 +20,25 @@ You need:
 - An **SMTP server**. CasePack sends user invitations through it, and won't invite users without it.
 - A **CasePack Self-Hosted entitlement**, and an account on the [licensing portal](https://licensing.samuelumeh.com/portal).
 
+:::caution[Trusted network only]
+The bundle serves plain HTTP. Until TLS is supported, run it only on a network you trust, such as your office LAN or a VPN. Keycloak refuses HTTP sign-in from public client addresses.
+:::
+
 The bundle uses these ports on the server:
 
 | Port | Service | Who needs to reach it |
 |---|---|---|
 | 3000 | Web app | Your users' browsers |
 | 8080 | API | Your users' browsers |
-| 8081 | Keycloak (sign-in) | Your users' browsers |
+| 8081 | Keycloak sign-in (only the `casepack` realm) | Your users' browsers |
 | 8333 | Evidence storage (S3) | Your users' browsers, for evidence uploads and downloads |
-| 5432 | PostgreSQL | Nobody outside the server. Keep it closed with your firewall, and set `DB_PORT` if 5432 is taken. |
+| 8082 | Keycloak admin console | Only you. It listens on the server itself (`127.0.0.1`). |
+
+PostgreSQL isn't published on the server. To reach the admin console from another machine, open an SSH tunnel and then go to `http://localhost:8082/admin/`:
+
+```bash
+ssh -L 8082:localhost:8082 <your-server>
+```
 
 ## 1. Get the Bundle
 
@@ -65,7 +75,7 @@ Leave these as shipped:
 - `CASEPACK_API_VERSION` and `CASEPACK_SPA_VERSION`: the versions this bundle was tested with.
 
 :::caution
-Keycloak reads the SMTP settings and the service-account secret only on its **first** start. To change SMTP later, see [Sign In and Invite Users](#6-sign-in-and-invite-users). To rotate the service-account secret, open the Keycloak admin console (`http://localhost:8081/admin`, realm **casepack**) at **Clients** → **casepack-user-manager** → **Credentials** and click **Regenerate**. Copy the new secret into `CASEPACK_KEYCLOAK_SA_CLIENT_SECRET` in `.env`, then run `docker compose up -d`.
+Keycloak reads the SMTP settings and the service-account secret only on its **first** start. To change SMTP later, see [Sign In and Invite Users](#6-sign-in-and-invite-users). To rotate the service-account secret, open the Keycloak admin console (`http://localhost:8082/admin/`, realm **casepack**; see [the ports](#before-you-start) for the tunnel) at **Clients** → **casepack-user-manager** → **Credentials** and click **Regenerate**. Copy the new secret into `CASEPACK_KEYCLOAK_SA_CLIENT_SECRET` in `.env`, then run `docker compose up -d`.
 :::
 
 ## 3. Start CasePack
@@ -144,7 +154,7 @@ To add people, use **Create User** on the users page. See [Users & Roles](/users
 
 If SMTP isn't configured, CasePack refuses the invitation with **"Email isn't set up for this CasePack installation…"** and creates nothing. To set up email after the first start, use the Keycloak admin console:
 
-1. Open `http://localhost:8081/admin` and sign in as `admin` with `KC_ADMIN_PASS`.
+1. Open `http://localhost:8082/admin/` on the server, or through the [SSH tunnel](#before-you-start), and sign in as `admin` with `KC_ADMIN_PASS`.
 2. Switch to the **casepack** realm.
 3. Open **Realm settings**, then the **Email** tab, and enter your mail server.
 

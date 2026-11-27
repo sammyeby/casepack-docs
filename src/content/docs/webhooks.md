@@ -78,7 +78,7 @@ curl -X POST https://your-instance/api/webhooks/intake/{endpointId} \
   -d '{"title": "Test incident", "description": "Test description", "severity": "low"}'
 ```
 
-A valid request returns `{"status":"processed","incidentId":"..."}`. Missing or invalid signatures return `401` with `{"status":"failed","error":"Invalid signature"}`.
+A valid request returns `{"status":"processed","incidentId":"..."}`. Missing or invalid signatures, and unknown endpoint URLs, return `401` with `{"status":"failed","error":"Invalid signature"}`. CasePack checks the signature before it stores anything, so a rejected request keeps no payload; the delivery history shows the attempt as failed.
 
 ## Tips & Best Practices
 

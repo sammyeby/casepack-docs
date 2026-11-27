@@ -65,7 +65,7 @@ Edit `.env` and fill in these settings. Generate each secret separately. Never r
 | `S3_SECRET_KEY` | `openssl rand -hex 32` |
 | `CASEPACK_KEYCLOAK_SA_CLIENT_SECRET` | `openssl rand -hex 32` |
 | `CASEPACK_SELF_HOST_BOOTSTRAP_ADMIN_EMAIL` | The first CasePack administrator's email address |
-| `CASEPACK_SELF_HOST_BOOTSTRAP_ADMIN_INITIAL_PASSWORD` | A temporary password. You choose a new one at first sign-in. |
+| `CASEPACK_SELF_HOST_BOOTSTRAP_ADMIN_INITIAL_PASSWORD` | `openssl rand -base64 18`. A temporary password: you choose a new one at first sign-in. Every CasePack password needs at least 12 characters, and can't be the username or email. |
 | `KC_SMTP_HOST`, `KC_SMTP_PORT`, `KC_SMTP_FROM`, `KC_SMTP_USER`, `KC_SMTP_PASSWORD` | Your mail server. Adjust `KC_SMTP_STARTTLS`, `KC_SMTP_SSL` and `KC_SMTP_AUTH` if it needs to. |
 
 Leave these as shipped:
@@ -116,6 +116,8 @@ read -rsp 'Enrollment code: ' code && printf '%s' "$code" > ~/casepack-enrollmen
 ```
 
 Don't put the code in `.env`, in a command line or in a ticket.
+
+Each deployment slot holds one installation. To move CasePack to another server, or to free the Recovery/test slot, click **Revoke** next to the old deployment in the portal first. It stops renewing at once, and becomes read-only when its current credential expires. Then create a code for the slot and enroll the new server.
 
 ## 5. Enroll
 
